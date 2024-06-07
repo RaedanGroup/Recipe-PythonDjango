@@ -1,0 +1,156 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit New Recipe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background-color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 16px;
+        }
+
+        .navbar a {
+            color: #f2f2f2;
+            text-align: center;
+            text-decoration: none;
+            padding: 14px 16px;
+            display: block;
+        }
+
+        .navbar a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        .navbar .left {
+            flex: 1;
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .navbar .right {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;  /* Adds space between the right-aligned links */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 50px 0;
+            background-color: rgba(100, 40, 40);
+            color: white;
+        }
+        .header h1 {
+            font-size: 32px;
+            margin: 0;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            max-width: 600px;
+        }
+        label {
+            font-size: larger;
+            font-weight: bolder;
+            color: rgba(100, 40, 40);
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="number"], input[type="file"], textarea {
+            padding: 10px;
+            border: 2px solid rgba(100, 40, 40);
+            border-radius: 5px;
+            background-color: #c7c7c7;
+            width: 100%;
+        }
+        textarea {
+            height: 60px; /* Make the ingredients field only 3 lines tall */
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #2e332e;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: rgba(100, 40, 40);
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="left">
+            <a href="{% url 'recipes:recipe_list' %}">Recipe List</a>
+            <a href="{% url 'recipes:search' %}">Search</a>
+        </div>
+        <div class="right">
+            <a href="{% url 'recipes:about_me' %}">About Me</a>
+            <a href="/admin/" target="_blank">Admin</a>
+            <a href="{% url 'recipes:logout' %}">Logout</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="header">
+            <h1>Submit a New Recipe</h1>
+        </div>
+        <div class="form-container">
+            <form id="recipe-form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Submit Recipe</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('recipe-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(this);
+            const response = await fetch("{% url 'recipes:submit_recipe' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: formData
+            });
+            
+            if (response.ok) {
+                alert('Recipe submitted successfully!');
+                this.reset();
+            } else {
+                alert('Error submitting recipe.');
+            }
+        });
+    </script>
+</body>
+</html>
