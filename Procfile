@@ -1,0 +1,1 @@
+web: gunicorn recipe-pythondjango.wsgi --log-file -
